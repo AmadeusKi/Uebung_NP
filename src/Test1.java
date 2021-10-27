@@ -1,9 +1,8 @@
-import java.util.HashMap;
-
 public class Test1 implements CarSensorInput, CarMotorOutput{
 
     private int testSpeed = 999;
     int testSteering = 999;
+    double testDistance = 8;
 
     @Override
     public void setSpeed(int x) throws CarException {
@@ -19,54 +18,63 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
     public double getDistance(Sensor s) throws CarException {
 //        messWert = Math.random()*100;
 //        return messWert;
-        return 8;
+        return testDistance;
     }
 
-    public static void main(String[] args) throws CarException {
-        Test1 test = new Test1();
+    public static void main(String[] args) throws CarException, InterruptedException {
+
         CarSensorInput testSensor = new Test1();
         CarMotorOutput testMotor = new Test1();
 
         Controller testController = new Controller(testSensor, testMotor);
 
-        //Test von getDistance
-        Test1.annahmeGleichDouble(testController.cs.getDistance(Sensor.FL), 8);
+        testGetDistance(testSensor);
+        controllerTest(testController);
 
-        //Test von speed und steering
-        HashMap<Sensor, Double> testSensorMessWerte = new HashMap<>();
-        testSensorMessWerte.put(Sensor.FL, 5d);
-        testSensorMessWerte.put(Sensor.FR, 5d);
-        testSensorMessWerte.put(Sensor.BL, 5d);
-        testSensorMessWerte.put(Sensor.BR, 5d);
+    }
 
-        annahmeGleichInt(test.testSpeed, 999);
-        testController.control(testSensorMessWerte);
-        annahmeGleichInt(test.testSpeed, 0);
+
+
+
+    private static void controllerTest(Controller testController) throws CarException, InterruptedException {
+        testController.chkSensorBL();
+        testController.chkSensorBR();
+        testController.chkSensorFL();
+        testController.chkSensorFR();
+        Thread.sleep(2000);
+
+        System.out.println("Test Messwert BR erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.BR),8d));
+        System.out.println("Test Messwert BL erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.BL),8d));
+        System.out.println("Test Messwert FR erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.FR),8d));
+        System.out.println("Test Messwert FL erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.FL),8d));
+
+        System.out.println("Test Control erfolgreich? " + annahmeGleichInt(testController.getCurrentSpeed(), 0));
 
 
 
 
     }
 
-    public static void annahmeGleichDouble(double ist, double soll){
+    private static void testGetDistance(CarSensorInput s) throws CarException {
+        System.out.println("Test getDistance() erfolgreich?  " + annahmeGleichDouble(s.getDistance(Sensor.FL),8d));
+
+    }
+
+    public static boolean annahmeGleichDouble(double ist, double soll){
         if (ist == soll){
-            System.out.println("Test erfolgreich");
-        }
+            return true;
+            }
         else {
-            System.out.println("Test gescheitert");
-            System.out.println("erwarteter Wert: " + soll);
-            System.out.println("erhaltener Wert: " + ist);
+            return false;
         }
     }
 
-    public static void annahmeGleichInt(int ist, int soll){
+    public static boolean annahmeGleichInt(int ist, int soll){
         if (ist == soll){
-            System.out.println("Test erfolgreich");
+            return true;
         }
         else {
-            System.out.println("Test gescheitert");
-            System.out.println("erwarteter Wert: " + soll);
-            System.out.println("erhaltener Wert: " + ist);
+            return false;
         }
     }
 }

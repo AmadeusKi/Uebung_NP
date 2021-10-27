@@ -2,9 +2,25 @@ import java.util.HashMap;
 
 public class Controller{
 
-    CarSensorInput cs;
-    CarMotorOutput cm;
-    HashMap<CarSensorInput.Sensor, Double> sensorMessWerte = new HashMap<>();
+    private CarSensorInput cs;
+    private CarMotorOutput cm;
+    private HashMap<CarSensorInput.Sensor, Double> sensorMessWerte = new HashMap<>();
+    private int currentSpeed;
+    private int currentSteering;
+
+    public HashMap<CarSensorInput.Sensor, Double> getSensorMessWerte() {
+        return sensorMessWerte;
+    }
+
+    public int getCurrentSpeed() {
+        return currentSpeed;
+    }
+
+    public int getCurrentSteering() {
+        return currentSteering;
+    }
+
+
 
     Controller(CarSensorInput cs, CarMotorOutput cm){
         this.cm = cm;
@@ -42,6 +58,7 @@ public class Controller{
                 if (Math.abs(letzterWert-messWert) > schwellWert){
                     try {
                         newValue(s, messWert);
+                        System.out.println("Messwert von " + s.toString() + " geändert.");
                     } catch (CarException e) {
                         e.printStackTrace();
                     }
@@ -84,11 +101,13 @@ public class Controller{
 
         if (sensorMessWerte.get(CarSensorInput.Sensor.FL) > 10 && sensorMessWerte.get(CarSensorInput.Sensor.FR) > 10){
             cm.setSpeed(100);
-            System.out.println("Freie Fahrt");
+            currentSpeed = 100;
+            //System.out.println("Freie Fahrt");
         }
         if (sensorMessWerte.get(CarSensorInput.Sensor.FL) < 10 && sensorMessWerte.get(CarSensorInput.Sensor.FR) < 10){
             cm.setSpeed(0);
-            System.out.println("Gefahrenbremsung");
+            currentSteering = 0;
+            //System.out.println("Gefahrenbremsung");
         }
 
     }
@@ -100,7 +119,7 @@ public class Controller{
         Stopper(SensorThread t){thread = t;}
         public void run(){
             try {
-                Thread.sleep(5000);
+                Thread.sleep(400);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
