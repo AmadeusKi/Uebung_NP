@@ -48,8 +48,15 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
         System.out.println("Test Messwert FR erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.FR),8d));
         System.out.println("Test Messwert FL erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.FL),8d));
 
-        System.out.println("Test Control erfolgreich? " + annahmeGleichInt(testController.getCurrentSpeed(), 0));
+        System.out.println("Test Control (Bremsung) erfolgreich? " + annahmeGleichInt(testController.getCurrentSpeed(), 0));
 
+        testController.getSensorMessWerte().put(Sensor.BL, 30d);
+        testController.getSensorMessWerte().put(Sensor.BR, 30d);
+        testController.getSensorMessWerte().put(Sensor.FL, 30d);
+        testController.getSensorMessWerte().put(Sensor.FR, 30d);
+        testController.control(testController.getSensorMessWerte());
+
+        System.out.println("Test Control (Gas geben) erfolgreich? " + annahmeGleichInt(testController.getCurrentSpeed(), 100));
 
 
 

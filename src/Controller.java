@@ -5,8 +5,8 @@ public class Controller{
     private CarSensorInput cs;
     private CarMotorOutput cm;
     private HashMap<CarSensorInput.Sensor, Double> sensorMessWerte = new HashMap<>();
-    private int currentSpeed;
-    private int currentSteering;
+    private int currentSpeed = 999;
+    private int currentSteering = 999;
 
     public HashMap<CarSensorInput.Sensor, Double> getSensorMessWerte() {
         return sensorMessWerte;
@@ -100,13 +100,13 @@ public class Controller{
     public void control(HashMap<CarSensorInput.Sensor, Double> sensorMessWerte) throws CarException {
 
         if (sensorMessWerte.get(CarSensorInput.Sensor.FL) > 10 && sensorMessWerte.get(CarSensorInput.Sensor.FR) > 10){
-            cm.setSpeed(100);
             currentSpeed = 100;
+            cm.setSpeed(100);
             //System.out.println("Freie Fahrt");
         }
         if (sensorMessWerte.get(CarSensorInput.Sensor.FL) < 10 && sensorMessWerte.get(CarSensorInput.Sensor.FR) < 10){
+            currentSpeed = 0;
             cm.setSpeed(0);
-            currentSteering = 0;
             //System.out.println("Gefahrenbremsung");
         }
 
