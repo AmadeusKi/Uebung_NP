@@ -33,9 +33,6 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
 
     }
 
-
-
-
     private static void controllerTest(Controller testController) throws CarException, InterruptedException {
         testController.chkSensorBL();
         testController.chkSensorBR();
@@ -54,11 +51,10 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
         testController.getSensorMessWerte().put(Sensor.BR, 30d);
         testController.getSensorMessWerte().put(Sensor.FL, 30d);
         testController.getSensorMessWerte().put(Sensor.FR, 30d);
+
         testController.control(testController.getSensorMessWerte());
 
         System.out.println("Test Control (Gas geben) erfolgreich? " + annahmeGleichInt(testController.getCurrentSpeed(), 100));
-
-
 
     }
 

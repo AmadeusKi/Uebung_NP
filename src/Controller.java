@@ -58,7 +58,7 @@ public class Controller{
                 if (Math.abs(letzterWert-messWert) > schwellWert){
                     try {
                         newValue(s, messWert);
-                        System.out.println("Messwert von " + s.toString() + " geändert.");
+//                        System.out.println("Messwert von " + s.toString() + " geändert.");
                     } catch (CarException e) {
                         e.printStackTrace();
                     }
