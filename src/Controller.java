@@ -64,6 +64,11 @@ public class Controller{
                         e.printStackTrace();
                     }
                 }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -112,9 +117,14 @@ public class Controller{
             //System.out.println("Gefahrenbremsung");
         }
         if (sensorMessWerte.get(CarSensorInput.Sensor.FL) < 10 && sensorMessWerte.get(CarSensorInput.Sensor.BL) < 10){
-            currentSteering = 100;
+            currentSteering = 80;
             cm.steering(100);
-            //System.out.println("Gefahrenbremsung");
+            //System.out.println("Hindernis links --> lenke rechts");
+        }
+        if (sensorMessWerte.get(CarSensorInput.Sensor.FR) < 10 && sensorMessWerte.get(CarSensorInput.Sensor.BR) < 10){
+            currentSteering = 80;
+            cm.steering(-100);
+            //System.out.println("Hindernis rechts --> lenke links");
         }
 
     }
