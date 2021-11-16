@@ -6,19 +6,19 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
 
     @Override
     public void setSpeed(int x) throws CarException {
-        testSpeed = x;
+        this.testSpeed = x;
     }
 
     @Override
     public void steering(int x) throws CarException {
-        testSteering = x;
+        this.testSteering = x;
     }
 
     @Override
     public double getDistance(Sensor s) throws CarException {
 //        messWert = Math.random()*100;
 //        return messWert;
-        return testDistance;
+        return this.testDistance;
     }
 
     public static void main(String[] args) throws CarException, InterruptedException {
@@ -47,6 +47,7 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
 
         System.out.println("Test Control (Bremsung) erfolgreich? " + annahmeGleichInt(testController.getCurrentSpeed(), 0));
 
+        //Test "genug Platz um das Auto"
         testController.getSensorMessWerte().put(Sensor.BL, 30d);
         testController.getSensorMessWerte().put(Sensor.BR, 30d);
         testController.getSensorMessWerte().put(Sensor.FL, 30d);
@@ -55,6 +56,16 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
         testController.control(testController.getSensorMessWerte());
 
         System.out.println("Test Control (Gas geben) erfolgreich? " + annahmeGleichInt(testController.getCurrentSpeed(), 100));
+
+        //
+        testController.getSensorMessWerte().put(Sensor.BL, 5d);
+        testController.getSensorMessWerte().put(Sensor.BR, 30d);
+        testController.getSensorMessWerte().put(Sensor.FL, 5d);
+        testController.getSensorMessWerte().put(Sensor.FR, 30d);
+
+        testController.control(testController.getSensorMessWerte());
+
+        System.out.println("Test Lenkung erfolgreich? " + annahmeGleichInt(testController.getCurrentSteering(), 100));
 
     }
 

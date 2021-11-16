@@ -34,7 +34,8 @@ public class Controller{
 
 
     }
-
+    //Klasse zum Starten der Threads in denen die Sensorwerte abgefragt und bei signifikanter Änderung
+    //an den Controller geschickt werden
     class SensorThread extends Thread{
 
         double messWert = 0;
@@ -71,7 +72,7 @@ public class Controller{
         }
     }
 
-
+    //Methoden zum starten der threads
     public void chkSensorFL() throws CarException {
         SensorThread fl = new SensorThread(CarSensorInput.Sensor.FL);
         fl.start();
@@ -97,6 +98,7 @@ public class Controller{
         control(this.sensorMessWerte);
     }
 
+    //Logik zur Verarbeitung der Sensorwerte
     public void control(HashMap<CarSensorInput.Sensor, Double> sensorMessWerte) throws CarException {
 
         if (sensorMessWerte.get(CarSensorInput.Sensor.FL) > 10 && sensorMessWerte.get(CarSensorInput.Sensor.FR) > 10){
@@ -107,6 +109,11 @@ public class Controller{
         if (sensorMessWerte.get(CarSensorInput.Sensor.FL) < 10 && sensorMessWerte.get(CarSensorInput.Sensor.FR) < 10){
             currentSpeed = 0;
             cm.setSpeed(0);
+            //System.out.println("Gefahrenbremsung");
+        }
+        if (sensorMessWerte.get(CarSensorInput.Sensor.FL) < 10 && sensorMessWerte.get(CarSensorInput.Sensor.BL) < 10){
+            currentSteering = 100;
+            cm.steering(100);
             //System.out.println("Gefahrenbremsung");
         }
 
