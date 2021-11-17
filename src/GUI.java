@@ -1,8 +1,10 @@
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,42 +20,34 @@ public class GUI extends Application implements CarSensorInput, CarMotorOutput{
     private int currentSpeed;
     private int currentSteering;
 
-    private HashMap<Sensor, Double> sensorMessWerte = new HashMap<>();
+    private HashMap<Sensor, Double> sensorMessWerte;
 
-    private Label valFL = new Label("");
-    private Label valFR = new Label("");
-    private Label valBL = new Label("");
-    private Label valBR = new Label("");
+    private Label valFL;
+    private Label valFR;
+    private Label valBL;
+    private Label valBR;
 
-    private Label lFL = new Label("Sensor FL");
-    private Label lFR = new Label("Sensor FR");
-    private Label lBL = new Label("Sensor HL");
-    private Label lBR = new Label("Sensor HR");
-    private Label lSpeed = new Label("");
-    private Label lSteering = new Label("");
+    private Label lSpeed;
+    private Label lSteering;
 
-    private Slider sliderFL = new Slider(0, 100, 50);
-    private Slider sliderFR = new Slider(0, 100, 50);
-    private Slider sliderBL = new Slider(0, 100, 50);
-    private Slider sliderBR = new Slider(0, 100, 50);
+    private Label lFL;
+    private Label lFR;
+    private Label lBL;
+    private Label lBR;
 
-    Button sendValues = new Button("Messwerte abschicken");
+    private Slider sliderFL;
+    private Slider sliderFR;
+    private Slider sliderBL;
+    private Slider sliderBR;
 
     private Controller c = new Controller(this, this);
 
-    private void addSliderListener(Slider slider, Sensor s){
+    //Listener, welcher bei Änderung der Slider die Sensorwerte aktualisiert und in die GUI einträgt
+    private void addListener(Slider slider, Sensor s, Label l){
         slider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 sensorMessWerte.put(s,newValue.doubleValue());
-            }
-        });
-    }
-
-    private void addLabelListener(Slider slider, Label l){
-        slider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 l.setText(newValue.toString());
             }
         });
@@ -63,95 +57,100 @@ public class GUI extends Application implements CarSensorInput, CarMotorOutput{
         launch(args);
     }
 
+    //Erstellung des Layout's und Erzeugung der GUI-Elemente
     private Parent createContent(){
 
-        HBox hboxLeft = new HBox(10);
-
-        VBox vboxLeft = new VBox(10); // spacing = 8
+        HBox hBox = new HBox(10);
+        hBox.setPadding(new Insets(10,10,10,10));
+        VBox vboxLeft = new VBox(10);
         VBox vboxRight = new VBox(10);
 
         vboxLeft.setMinWidth(300);
         vboxRight.setMinWidth(300);
 
+        initLabel();
         initSlider();
-        initHashmap();
-        initButton();
 
-        vboxLeft.getChildren().addAll(lFL,sliderFL,valFL, lBL, sliderBL, valBL, sendValues);
-
+        vboxLeft.getChildren().addAll(lFL,sliderFL,valFL, lBL, sliderBL, valBL);
         vboxRight.getChildren().addAll(lFR, sliderFR, valFR, lBR, sliderBR, valBR, lSpeed, lSteering);
+        hBox.getChildren().addAll(vboxLeft, vboxRight);
 
-        hboxLeft.getChildren().addAll(vboxLeft, vboxRight);
-
-        return hboxLeft;
+        return hBox;
     }
 
-    private void initButton() {
-        sendValues.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    c.control(sensorMessWerte);
-                    lSpeed.setText("current Speed: " + String.valueOf(currentSpeed));
-                    lSteering.setText("current Steering: " + String.valueOf(currentSteering));
-                } catch (CarException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+    // Methode zur Initialisierung der Label
+    private void initLabel() {
+        lBR = new Label("Sensor BR");
+        lBL = new Label("Sensor BL");
+        lFR = new Label("Sensor FR");
+        lFL = new Label("Sensor FL");
+
+        valFL = new Label("");
+        valFR = new Label("");
+        valBL = new Label("");
+        valBR = new Label("");
+
+        lSpeed = new Label("");
+        lSteering = new Label("");
+
     }
 
+    // Methode, welche die Hashmap initialisiert und mit default-Werten bestückt
+    // Die default-Werte der Hashmap entsprechen den Slider-default-Werten
     private void initHashmap() {
+        sensorMessWerte = new HashMap<>(4);
         sensorMessWerte.put(CarSensorInput.Sensor.FL, 50d);
         sensorMessWerte.put(CarSensorInput.Sensor.FR, 50d);
         sensorMessWerte.put(CarSensorInput.Sensor.BL, 50d);
         sensorMessWerte.put(CarSensorInput.Sensor.BR, 50d);
     }
 
+    //Methode zum Initialisieren der Slider
     private void initSlider() {
 
+        sliderFL = new Slider(0, 100, 50);
         sliderFL.setShowTickLabels(true);
         sliderFL.setShowTickMarks(true);
-        addLabelListener(sliderFL, valFL);
-        addSliderListener(sliderFL, Sensor.FL);
+        addListener(sliderFL,Sensor.FL, valFL);
 
-
+        sliderFR = new Slider(0, 100, 50);
         sliderFR.setShowTickLabels(true);
         sliderFR.setShowTickMarks(true);
-        addLabelListener(sliderFR, valFR);
-        addSliderListener(sliderFR, Sensor.FR);
+        addListener(sliderFR,Sensor.FR, valFR);
 
-
+        sliderBL = new Slider(0, 100, 50);
         sliderBL.setShowTickLabels(true);
         sliderBL.setShowTickMarks(true);
-        addLabelListener(sliderBL, valBL);
-        addSliderListener(sliderBL, Sensor.BL);
+        addListener(sliderBL, Sensor.BL, valBL);
 
-
+        sliderBR = new Slider(0, 100, 50);
         sliderBR.setShowTickLabels(true);
         sliderBR.setShowTickMarks(true);
-        addLabelListener(sliderBR, valBR);
-        addSliderListener(sliderBR, Sensor.BR);
+        addListener(sliderBR,Sensor.BR, valBR);
     }
 
     @Override
     public void start(Stage primaryStage) throws CarException {
 
-        primaryStage.setTitle("GUI");
+        initHashmap();      // Befüllen der Hashmap mit Initialwerten
+        startSensors();     // Starten der SensorThreads
+        controlThread t = new controlThread();
+        t.start();      // Starten des Threads, welcher den Motor steuert.
 
+        primaryStage.setTitle("GUI Input-Output-Simulation");
         primaryStage.setScene(new Scene(createContent(), 700,700));
-        startSensors();
         primaryStage.show();
     }
 
+    //Methode zum Starten der Sensorthreads
     private void startSensors() throws CarException {
         c.chkSensorFL();
         c.chkSensorFR();
         c.chkSensorBL();
         c.chkSensorBR();
-
     }
 
+    // Methoden, welche von den Schnittstellen vererbt wurden.
     @Override
     public double getDistance(Sensor s) throws CarException {
         return sensorMessWerte.get(s);
@@ -165,5 +164,31 @@ public class GUI extends Application implements CarSensorInput, CarMotorOutput{
     @Override
     public void steering(int x) throws CarException {
         currentSteering = x;
+    }
+
+    // Klasse welche den Steuerthread beinhaltet
+    // lässt Sensorwerte überprüfen und passt dementsprechend das GUI an
+    class controlThread extends Thread{
+
+        public void run(){
+
+            while (true){
+                try {
+                    c.control(c.getSensorMessWerte());
+                } catch (CarException e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(() -> {
+                    lSpeed.setText("current Speed: " + currentSpeed + "%");
+                    lSteering.setText("current Steering: " + currentSteering + "%");
+                });
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
     }
 }
