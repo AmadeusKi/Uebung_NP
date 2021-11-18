@@ -7,6 +7,7 @@ public class Controller{
     private CarSensorInput cs;
     private CarMotorOutput cm;
     private HashMap<CarSensorInput.Sensor, Double> sensorMessWerte = new HashMap<>();
+    private int[] motorParameter;
 
     public HashMap<CarSensorInput.Sensor, Double> getSensorMessWerte() {
         return sensorMessWerte;
@@ -94,37 +95,48 @@ public class Controller{
     // Methode zur Steuerung der Motoren
     public void control(HashMap<CarSensorInput.Sensor, Double> sensorMessWerte) throws CarException {
 
-        applyRule(sensorMessWerte.get(CarSensorInput.Sensor.FL), sensorMessWerte.get(CarSensorInput.Sensor.FR), sensorMessWerte.get(CarSensorInput.Sensor.BL), sensorMessWerte.get(CarSensorInput.Sensor.BR));
-
+        motorParameter = new int[2];    // enthält die Parameter für den Motor Index 0 = Speed Index 1 = Steering
+        motorParameter = applyRule(sensorMessWerte.get(CarSensorInput.Sensor.FL), sensorMessWerte.get(CarSensorInput.Sensor.FR), sensorMessWerte.get(CarSensorInput.Sensor.BL), sensorMessWerte.get(CarSensorInput.Sensor.BR));
+        cm.setSpeed(motorParameter[0]);
+        cm.steering(motorParameter[1]);
     }
 
     // Methode welche das Fahrverhalten in Abhängigkeit der Sensorwerte bestimmt
-    private void applyRule(Double fl, Double fr, Double bl, Double br) throws CarException {
-        if (fl < 10 && fr < 10){ //Gefahrenbremsung
-            cm.setSpeed(0);
-            cm.steering(0);
+    private int[] applyRule(Double fl, Double fr, Double bl, Double br) throws CarException {
+        int[] param = new int[2];
+        param[0] = 0;
+        param[1] = 0;
+        if (fl < 5 || fr < 5){ //Gefahrenbremsung
+            param[0] = 0;
+            param[1] = 0;
 
             if (bl > 20 && br > 20){ //zurücksetzen
-                cm.setSpeed(-100);
-                cm.steering(0);
+                param[0] = -100;
+                param[1] = 0;
             }
+            return param;
         }
         if (fl > 10 && fr > 10){ //leicht beschleunigen
-            cm.setSpeed(50);
-            cm.steering(0);
-            if (fl > 20 && fr > 20){ // Vollgas
-                cm.setSpeed(100);
-                cm.steering(0);
+            param[0] = 50;
+            param[1] = 0;
+
+            if (fl > 20 && fr > 20) { // Vollgas
+                param[0] = 100;
+                param[1] = 0;
             }
+            return param;
         }
         if (fl < 10 && fr > 10){ //Lenkung nach rechts; halbe Geschwindigkeit
-            cm.steering(100);
-            cm.setSpeed(50);
+            param[0] = 50;
+            param[1] = 100;
+            return param;
         }
         if (fl > 10 && fr < 10){ //Lenkung nach links; halbe Geschwindigkeit
-            cm.setSpeed(50);
-            cm.steering(-100);
+            param[0] = 50;
+            param[1] = -100;
+            return param;
         }
+        return param;
 
     }
 
