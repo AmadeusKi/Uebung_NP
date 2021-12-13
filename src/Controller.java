@@ -1,5 +1,3 @@
-import com.sun.xml.internal.bind.v2.TODO;
-
 import java.util.HashMap;
 
 public class Controller{
@@ -13,16 +11,15 @@ public class Controller{
         return sensorMessWerte;
     }
 
-    Controller(CarSensorInput cs, CarMotorOutput cm){
+    Controller(CarSensorInput cs, CarMotorOutput cm) throws CarException {
         this.cm = cm;
         this.cs = cs;
 
         //Erstinitialisierung der Hashmap mit Anfangswerten
-        sensorMessWerte.put(CarSensorInput.Sensor.FL, 100d);
-        sensorMessWerte.put(CarSensorInput.Sensor.FR, 100d);
-        sensorMessWerte.put(CarSensorInput.Sensor.BL, 100d);
-        sensorMessWerte.put(CarSensorInput.Sensor.BR, 100d);
-
+        sensorMessWerte.put(CarSensorInput.Sensor.V, 100d);
+        sensorMessWerte.put(CarSensorInput.Sensor.H, 100d);
+        sensorMessWerte.put(CarSensorInput.Sensor.R, 100d);
+        sensorMessWerte.put(CarSensorInput.Sensor.L, 100d);
 
     }
     //Klasse zum Starten der Threads in denen die Sensorwerte abgefragt und bei signifikanter Änderung
@@ -50,7 +47,6 @@ public class Controller{
                     try {
                         newValue(s, messWert);
                         letzterWert = messWert;
-//                        System.out.println("Messwert von " + s.toString() + " geändert.");
                     } catch (CarException e) {
                         e.printStackTrace();
                     }
@@ -65,23 +61,17 @@ public class Controller{
     }
 
     //Methoden zum starten der Threads
-    public void chkSensorFL() throws CarException {
-        SensorThread fl = new SensorThread(CarSensorInput.Sensor.FL);
+    public void startThreads() throws CarException {
+        SensorThread fl = new SensorThread(CarSensorInput.Sensor.V);
         fl.start();
-    }
 
-    public void chkSensorFR() throws CarException {
-        SensorThread fr = new SensorThread(CarSensorInput.Sensor.FR);
+        SensorThread fr = new SensorThread(CarSensorInput.Sensor.H);
         fr.start();
-    }
 
-    public void chkSensorBL() throws CarException {
-        SensorThread bl = new SensorThread(CarSensorInput.Sensor.BL);
+        SensorThread bl = new SensorThread(CarSensorInput.Sensor.R);
         bl.start();
-    }
 
-    public void chkSensorBR() throws CarException {
-        SensorThread br = new SensorThread(CarSensorInput.Sensor.BR);
+        SensorThread br = new SensorThread(CarSensorInput.Sensor.L);
         br.start();
     }
 
@@ -96,42 +86,42 @@ public class Controller{
     public void control(HashMap<CarSensorInput.Sensor, Double> sensorMessWerte) throws CarException {
 
         motorParameter = new int[2];    // enthält die Parameter für den Motor Index 0 = Speed Index 1 = Steering
-        motorParameter = applyRule(sensorMessWerte.get(CarSensorInput.Sensor.FL), sensorMessWerte.get(CarSensorInput.Sensor.FR), sensorMessWerte.get(CarSensorInput.Sensor.BL), sensorMessWerte.get(CarSensorInput.Sensor.BR));
+        motorParameter = applyRule(sensorMessWerte.get(CarSensorInput.Sensor.V), sensorMessWerte.get(CarSensorInput.Sensor.H), sensorMessWerte.get(CarSensorInput.Sensor.R), sensorMessWerte.get(CarSensorInput.Sensor.L));
         cm.setSpeed(motorParameter[0]);
         cm.steering(motorParameter[1]);
     }
 
     // Methode welche das Fahrverhalten in Abhängigkeit der Sensorwerte bestimmt
-    private int[] applyRule(Double fl, Double fr, Double bl, Double br) throws CarException {
+    private int[] applyRule(Double v, Double h, Double r, Double l) throws CarException {
         int[] param = new int[2];
-        param[0] = 0;
-        param[1] = 0;
-        if (fl < 5 || fr < 5){ //Gefahrenbremsung
+        param[0] = 0;   //speed
+        param[1] = 0;   //steering
+        if (v < 5){ //Gefahrenbremsung
             param[0] = 0;
             param[1] = 0;
 
-            if (bl > 20 && br > 20){ //zurücksetzen
+            if (h > 20){ //zurücksetzen
                 param[0] = -100;
                 param[1] = 0;
             }
             return param;
         }
-        if (fl > 10 && fr > 10){ //leicht beschleunigen
+        if (v > 10){ //leicht beschleunigen
             param[0] = 50;
             param[1] = 0;
 
-            if (fl > 20 && fr > 20) { // Vollgas
+            if (v > 20) { // Vollgas
                 param[0] = 100;
                 param[1] = 0;
             }
             return param;
         }
-        if (fl < 10 && fr > 10){ //Lenkung nach rechts; halbe Geschwindigkeit
+        if (v < 10 && l < 10){ //Lenkung nach rechts; halbe Geschwindigkeit
             param[0] = 50;
             param[1] = 100;
             return param;
         }
-        if (fl > 10 && fr < 10){ //Lenkung nach links; halbe Geschwindigkeit
+        if (v < 10 && r < 10){ //Lenkung nach links; halbe Geschwindigkeit
             param[0] = 50;
             param[1] = -100;
             return param;
@@ -139,22 +129,4 @@ public class Controller{
         return param;
 
     }
-
-
-
-    //Stopperklasse um alle Threads zu stoppen.
-//    class Stopper extends Thread{
-//        SensorThread thread;
-//
-//        Stopper(SensorThread t){thread = t;}
-//        public void run(){
-//            try {
-//                Thread.sleep(400);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            thread.setContinue(false);
-//        }
-//    }
-//
 }

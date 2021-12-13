@@ -7,7 +7,7 @@ public interface CarSensorInput{
 	/** es gibt vier Sensoren: FL ist vorne links am Auto angebracht, FR vorne rechts, 
 	* BL hinten links und BR hinten rechts.
 	*/
-	enum Sensor {FL,FR,BL,BR;}
+	enum Sensor {V, H, R, L;}
 	
 	/** 
 	* Liefert die aktuell gemessene Entfernung zum naechsten ortbaren Objekt des 

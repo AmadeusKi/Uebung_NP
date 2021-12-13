@@ -10,10 +10,10 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
 
     Test1(){
         sensorMessWerte = new HashMap<>(4);
-        sensorMessWerte.put(Sensor.FL, 100d);
-        sensorMessWerte.put(Sensor.FR, 100d);
-        sensorMessWerte.put(Sensor.BL, 100d);
-        sensorMessWerte.put(Sensor.BR, 100d);
+        sensorMessWerte.put(Sensor.V, 100d);
+        sensorMessWerte.put(Sensor.H, 100d);
+        sensorMessWerte.put(Sensor.R, 100d);
+        sensorMessWerte.put(Sensor.L, 100d);
     }
     @Override
     public void setSpeed(int x) throws CarException {
@@ -46,34 +46,31 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
 
     private void controllerTest() throws CarException, InterruptedException {
         testController = new Controller(this, this);
-        testController.chkSensorBL();
-        testController.chkSensorBR();
-        testController.chkSensorFL();
-        testController.chkSensorFR();
+        testController.startThreads();
         Thread.sleep(2000);
 
-        System.out.println("Test Messwert BR erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.BR),8d));
-        System.out.println("Test Messwert BL erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.BL),8d));
-        System.out.println("Test Messwert FR erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.FR),8d));
-        System.out.println("Test Messwert FL erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.FL),8d));
+        System.out.println("Test Messwert BR erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.L),8d));
+        System.out.println("Test Messwert BL erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.R),8d));
+        System.out.println("Test Messwert FR erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.H),8d));
+        System.out.println("Test Messwert FL erfolgreich? " + annahmeGleichDouble(testController.getSensorMessWerte().get(Sensor.V),8d));
 
         System.out.println("Test Control (Bremsung) erfolgreich? " + annahmeGleichInt(testSpeed, 0));
 
         //Test "genug Platz um das Auto"
-        testController.getSensorMessWerte().put(Sensor.BL, 30d);
-        testController.getSensorMessWerte().put(Sensor.BR, 30d);
-        testController.getSensorMessWerte().put(Sensor.FL, 30d);
-        testController.getSensorMessWerte().put(Sensor.FR, 30d);
+        testController.getSensorMessWerte().put(Sensor.R, 30d);
+        testController.getSensorMessWerte().put(Sensor.L, 30d);
+        testController.getSensorMessWerte().put(Sensor.V, 30d);
+        testController.getSensorMessWerte().put(Sensor.H, 30d);
 
         testController.control(testController.getSensorMessWerte());
 
         System.out.println("Test Control (Gas geben) erfolgreich? " + annahmeGleichInt(testSpeed, 100));
 
         //
-        testController.getSensorMessWerte().put(Sensor.BL, 5d);
-        testController.getSensorMessWerte().put(Sensor.BR, 30d);
-        testController.getSensorMessWerte().put(Sensor.FL, 5d);
-        testController.getSensorMessWerte().put(Sensor.FR, 30d);
+        testController.getSensorMessWerte().put(Sensor.R, 5d);
+        testController.getSensorMessWerte().put(Sensor.L, 30d);
+        testController.getSensorMessWerte().put(Sensor.V, 5d);
+        testController.getSensorMessWerte().put(Sensor.H, 30d);
 
         testController.control(testController.getSensorMessWerte());
 
@@ -82,7 +79,7 @@ public class Test1 implements CarSensorInput, CarMotorOutput{
     }
 
     private void testGetDistance(CarSensorInput s) throws CarException {
-        System.out.println("Test getDistance() erfolgreich?  " + annahmeGleichDouble(s.getDistance(Sensor.FL),8d));
+        System.out.println("Test getDistance() erfolgreich?  " + annahmeGleichDouble(s.getDistance(Sensor.V),8d));
 
     }
 

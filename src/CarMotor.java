@@ -4,10 +4,12 @@ public class CarMotor implements CarMotorOutput{
     @Override
     public void setSpeed(int x) throws CarException {
         speed = x;
+        System.out.println("Carmotor speed");
     }
 
     @Override
     public void steering(int x) throws CarException {
         steering = x;
+        System.out.println("Carmotor steering");
     }
 }
