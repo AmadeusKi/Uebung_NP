@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project default="runGUItoGUI" name="NP_Uebung" basedir=".">
+
+    <target name="jarGUItoGUI" depends="compileGUItoGUI">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/GUI.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="GUI"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="compileGUItoGUI">
+        <mkdir dir="build/classes"/>
+        <javac includeantruntime="false" srcdir="./src" destdir="build/classes">
+            <exclude name="Test1.java" />
+            <exclude name="Main.java" />
+            <exclude name="SilTest.java" />
+            <exclude name="MainAnt.java" />
+            <exclude name="Carsensor" />
+            <exclude name="Carmotor" />
+        </javac>
+    </target>
+
+    <target name="runGUItoGUI" depends="jarGUItoGUI">
+        <java fork="true" classpath="build/classes" classname="MainFX" />
+    </target>
+
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+
+    <target name="compileSiLtoSiL">
+        <mkdir dir="build/classes"/>
+        <javac includeantruntime="false" srcdir="./src" destdir="build/classes">
+            <exclude name="Test1.java" />
+            <exclude name="Main.java" />
+            <exclude name="GUI.java" />
+
+        </javac>
+    </target>
+
+    <target name="runSiLtoSiL" depends="jarSiLtoSiL">
+        <java fork="true" classpath="build/classes" classname="MainAnt">
+            <arg value="SiL" />
+            <arg value="SiL" />
+        </java>
+    </target>
+
+    <target name="jarSiLtoSiL" depends="compileSiLtoSiL">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/SiLtoSiL.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="MainAnt"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="compileSiLtoGUI">
+        <mkdir dir="build/classes"/>
+        <javac includeantruntime="false" srcdir="./src" destdir="build/classes">
+            <exclude name="Test1.java" />
+            <exclude name="Main.java" />
+            <exclude name="MainAnt.java" />
+            <exclude name="MainFX.java" />
+
+        </javac>
+    </target>
+
+    <target name="runSiLtoGUI" depends="jarSiLtoGUI">
+        <java fork="true" classpath="build/classes" classname="MainSiLFX">
+        </java>
+    </target>
+
+    <target name="jarSiLtoGUI" depends="compileSiLtoGUI">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/SiLtoGUI.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="MainSiLFX"/>
+            </manifest>
+        </jar>
+    </target>
+
+
+
+
+</project>
